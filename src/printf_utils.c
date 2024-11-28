@@ -6,7 +6,7 @@
 /*   By: dderny <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/28 14:45:48 by dderny            #+#    #+#             */
-/*   Updated: 2024/11/28 16:18:53 by dderny           ###   ########.fr       */
+/*   Updated: 2024/11/28 17:40:03 by dderny           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,4 +73,17 @@ int	get_flag_type(char *flag, t_pflag *type)
 		return (flag - sflag);
 	}
 	return (0);
+}
+
+char	*ft_strfreejoin(const char *s1, const char *s2, int free1, int free2)
+{
+	char	*str;
+	str = ft_strjoin(s1, s2);
+	if (free1)
+		free(s1);
+	if (free2)
+		free(s2);
+	if (!str)
+		return (NULL);
+	return (str);
 }
