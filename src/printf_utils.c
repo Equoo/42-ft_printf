@@ -6,7 +6,7 @@
 /*   By: dderny <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/28 14:45:48 by dderny            #+#    #+#             */
-/*   Updated: 2024/11/28 17:40:03 by dderny           ###   ########.fr       */
+/*   Updated: 2024/11/29 13:05:49 by dderny           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,16 +25,17 @@ static int	numberlen(long n, int baselen, char sign)
 	return (len);
 }
 
-char	*ft_lltoa_base(long n, char *base, int baselen, char sign)
+char	*ft_lltoa_base(long n, t_lltoainfo info)
 {
 	int			len;
 	long long	nb;
 	char		*str;
 
-	len = numberlen(n, baselen, sign);
+	len = numberlen(n, info.baselen, sign) + zeros;
 	str = ft_calloc(len + 1, sizeof(char));
 	if (!str)
 		return (NULL);
+	ft_memset(str, base[0], zeros + 1);
 	nb = (long long)n;
 	if (nb < 0)
 	{
@@ -57,19 +58,20 @@ int	get_flag_type(char *flag, t_pflag *type)
 	int		tmp;
 
 	sflag = flag;
-	type->mtype = F_NONE;
-	tmp = ft_strchrpos("# 0+", *flag);
-	if (tmp >= 0 && flag++)
+	tmp = ft_strchrpos(ATRIBUTES, *flag);
+	while (tmp >= 0 && flag++)
 	{
-		type->mtype = (t_prnt_flag)tmp;
-		type->modifier = ft_atoi(flag);
-		while (ft_isdigit(*flag))
-			flag++;
+		type->atributs[tmp];
+		tmp = ft_strchrpos(ATRIBUTES, *flag);
 	}
-	tmp = ft_strchrpos("cspdiuxX%", *flag);
+	type->min = ft_atoi(flag);
+	while (ft_isdigit(*flag))
+		flag++;
+	type->flag = F_NONE;
+	tmp = ft_strchrpos(FLAGS, *flag);
 	if (tmp >= 0 && flag++)
 	{
-		type->type = (t_prnt_flag)(4 + tmp);
+		type->flag = (t_prnt_flag)(ATRIBUTESLEN + tmp);
 		return (flag - sflag);
 	}
 	return (0);

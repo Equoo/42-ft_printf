@@ -6,22 +6,29 @@
 /*   By: dderny <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/28 14:16:10 by dderny            #+#    #+#             */
-/*   Updated: 2024/11/28 17:40:22 by dderny           ###   ########.fr       */
+/*   Updated: 2024/11/29 13:06:51 by dderny           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef FT_PRINTF_H
 # define FT_PRINTF_H
 # include "libft.h"
+
 # define BASE10  "0123456789"
 # define BASE16l  "0123456789abcdef"
 # define BASE16u  "0123456789ABCDEF"
+
+# define ATRIBUTES "# 0+-."
+# define ATRIBUTESLEN 6
+# define FLAGS "cspdiuxX%"
 typedef enum e_prnt_flag
 {
 	F_TAG,
 	F_SPACE,
 	F_ZERO,
 	F_PLUS,
+	F_MINUS,
+	F_POINT,
 	F_CHAR,
 	F_STRING,
 	F_POINTER,
@@ -36,20 +43,20 @@ typedef enum e_prnt_flag
 
 typedef struct s_pflag
 {
-	t_prnt_flag	type;
-	t_prnt_flag	mtype;
-	int			modifier;
+	t_prnt_flag	flag;
+	int			atributs[ATRIBUTESLEN];
+	int			min;
 }				t_pflag;
 
-typedef struct s_itoainfo
+typedef struct s_lltoainfo
 {
-	char	*base;
-	char	sign;
-	char	*prefix;
-	int		zeromin;
-}				t_itoainfo;
+	char *base;
+	int baselen;
+	char sign;
+	int zeros;
+}				t_lltoainfo;
 
-char			*ft_lltoa_base(long n, char *base, int baselen, char sign);
+char			*ft_lltoa_base(long n, t_lltoainfo info);
 char			*ft_strfreejoin(const char *s1, const char *s2, int free1, int free2);
 
 int				get_flag_type(char *flag, t_pflag *type);

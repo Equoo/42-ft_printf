@@ -6,70 +6,61 @@
 /*   By: dderny <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/28 14:16:10 by dderny            #+#    #+#             */
-/*   Updated: 2024/11/28 17:59:29 by dderny           ###   ########.fr       */
+/*   Updated: 2024/11/29 13:11:11 by dderny           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
 #include <stdarg.h>
 
-static char	*getnumber(long nb, t_itoainfo params)
+static char	*justifytxt(char fill);
+
+static char	*convertanynbr(va_list ap, t_pflag ptype)
 {
-	char	*nbr;
-	int		len;
-	char	*tmp;
+	char		*str;
+	t_lltoainfo	info;
+	long long	nbr;
 	
-	nbr = ft_lltoa_base(nb, params.base, ft_strlen(params.base), params.sign);
-	if (!nbr)
+	if (ptype.flag == F_DECIMAL || ptype.flag == F_INT)
+		nbr = (long long)va_arg(ap, int);
+	if (ptype.flag == F_UNSIGNED)
+		nbr = (long long)va_arg(ap, unsigned int);
+	info = (t_lltoainfo){BASE10, 10, 0, 0};
+	if (ptype.atributs[F_PLUS])
+		info.sign = '+';
+	if (ptype.atributs[F_SPACE])
+		info.sign = ' ';
+	if (ptype.atributs[F_ZERO])
+		info.zeros = ptype.min;
+	str = ft_lltoa_base(nbr, info);
+	if (!str)
 		return (NULL);
-	len = ft_strlen(nbr);
-	if (params.zeromin > len)
-	{
-		tmp = ft_calloc(params.zeromin + 1, sizeof(char));
-		if (!nbr)
-			return (free(nbr), NULL);
-		ft_strlcpy(tmp + params.zeromin - len, nbr, params.zeromin);
-		ft_memset(tmp, params.base[0], params.zeromin - len);
-		free(nbr);
-		nbr = tmp;
-	}
-	if (params.prefix)
-	{
-		nbr = ft_strfreejoin(params.prefix, nbr, 0, 1);
-		if (!nbr)
-			return (NULL);
-	}
-	return (nbr);
+	return (justifytxt(ptype.atributs[F_MINUS], ptype.min, ptype.atributs[F_SPACE]))
 }
 
-static char	*getconvert(va_list ap, t_pflag ptype)
+static char	*convertany(va_list ap, t_pflag ptype)
 {
 	char	*tmp;
-	char	prefix[3];
-	char	sign;
-	int		minzero;
-	
-	sign = 0;
-	if (ptype.mtype == F_PLUS)
-		sign = '+';
-	if (ptype.mtype == F_SPACE)
-		sign = ' ';
-	if (ptype.mtype == F_TAG)
-		ft_strlcpy(prefix, "0x", 3);
-	if (ptype.mtype == F_ZERO)
-		
+	char	c;
 
-	if (ptype.type == F_CHAR)
-		tmp = ft_putchar_fd(va_arg(ap, char), 0);
-	if (ptype.type == F_STRING)
-		tmp = ft_putstr_fd(va_arg(ap, char *), 0);
-	if (ptype.type == F_POINTER)
-		tmp = getnumber((long)va_arg(ap, void *),
-			(t_itoainfo){BASE16l, 0, "0x", 8});
-	if (ptype.type == F_DECIMAL || ptype.type == F_INT)
+	c = '%';
+	if (ptype.flag == F_CHAR)
 	{
-		tmp = getnumber(va_arg(ap, int), (t_itoainfo){BASE10, 0, NULL, sign});
+		c = (char)va_arg(ap, char);
+		tmp = ft_strdup(&c);
 	}
+	if (ptype.flag == F_CHAR)
+		tmp = ft_strdup(&c);
+	if (ptype.flag == F_STRING)
+		tmp = ft_strdup(va_arg(ap, char *));
+	if (ptype.flag == F_STRING)
+		tmp = ft_strdup(va_arg(ap, char *));
+	if (ptype.flag == F_POINTER)
+		tmp = converthexa((unsigned int)va_arg(ap, void *));
+	if (ptype.flag == F_DECIMAL || ptype.flag == F_INT || ptype.flag == F_UNSIGNED)
+		tmp = convertanynbr(ap, ptype);
+	if (ptype.flag == F_HEXAL || ptype.flag == F_HEXAU)
+		tmp = converthexa(va_arg(ap, unsigned int), ptype);
 	return (tmp);
 }
 
@@ -90,7 +81,7 @@ int	ft_printf(const char *format, ...)
 		{
 			next = get_flag_type(format + i, &ptype);
 			if (next > 0)
-				if (!convertnjoin(ap, ptype))
+				if (!convertany(ap, ptype))
 					return (0);
 			i += next;
 		}
