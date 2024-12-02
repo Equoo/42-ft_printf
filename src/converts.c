@@ -6,16 +6,15 @@
 /*   By: dderny <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/02 14:41:34 by dderny            #+#    #+#             */
-/*   Updated: 2024/12/02 15:24:53 by dderny           ###   ########.fr       */
+/*   Updated: 2024/12/02 15:40:38 by dderny           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 
 #include "ft_printf.h"
 #include "libft.h"
-#include <stdarg.h>
 
-char	*convertanynbr(va_list ap, t_pflag ptype)
+char	*convertnbr(va_list ap, t_pflag ptype)
 {
 	char		*str;
 	t_lltoainfo	info;
@@ -36,7 +35,7 @@ char	*convertanynbr(va_list ap, t_pflag ptype)
 	return (str);
 }
 
-char	*convertanyhexa(unsigned int nbr, char *base, int baselen, t_pflag ptype)
+char	*converthexa(long long nbr, char *base, int baselen, t_pflag ptype)
 {
 	char		*str;
 	t_lltoainfo	info;
@@ -46,18 +45,16 @@ char	*convertanyhexa(unsigned int nbr, char *base, int baselen, t_pflag ptype)
 		info.zeros = ptype.min - 2;
 	if (ptype.atributs[F_ZERO] && !ptype.atributs[F_TAG])
 		info.zeros = ptype.min;
-	str = ft_lltoa_base((long long)nbr, info);
+	str = ft_lltoa_base(nbr, info);
 	if (str && ptype.atributs[F_TAG])
 		ft_strfreejoin("0x", str, 0, 1);
 	return (str);
 }
 
-char	*converanychar(va_list ap, t_pflag ptype)
+char	*convertchar(char c, t_pflag ptype)
 {
-	char	c;
 	char	*res;
 
-	c = va_arg(ap, char );
 	res = ft_calloc(2, sizeof(char));
 	if (!res)
 		return (NULL);
@@ -65,7 +62,7 @@ char	*converanychar(va_list ap, t_pflag ptype)
 	return (res);
 }
 
-char	*converanystr(va_list ap, t_pflag ptype)
+char	*convertstr(va_list ap, t_pflag ptype)
 {
 	char	*cpystr;
 	char	*res;

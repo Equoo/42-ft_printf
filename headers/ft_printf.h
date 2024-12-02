@@ -6,16 +6,17 @@
 /*   By: dderny <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/28 14:16:10 by dderny            #+#    #+#             */
-/*   Updated: 2024/12/02 14:52:13 by dderny           ###   ########.fr       */
+/*   Updated: 2024/12/02 15:41:17 by dderny           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef FT_PRINTF_H
 # define FT_PRINTF_H
+# include <stdarg.h>
 
-# define BASE10  "0123456789"
-# define BASE16l  "0123456789abcdef"
-# define BASE16u  "0123456789ABCDEF"
+# define BASE10 "0123456789"
+# define BASE16l "0123456789abcdef"
+# define BASE16u "0123456789ABCDEF"
 
 # define ATRIBUTES "# 0+-."
 # define ATRIBUTESLEN 6
@@ -49,20 +50,23 @@ typedef struct s_pflag
 
 typedef struct s_lltoainfo
 {
-	char *base;
-	int baselen;
-	char sign;
-	int zeros;
+	char		*base;
+	int			baselen;
+	char		sign;
+	int			zeros;
 }				t_lltoainfo;
 
 char			*ft_lltoa_base(long long n, t_lltoainfo info);
-char			*ft_strfreejoin(const char *s1, const char *s2, int free1, int free2);
+char			*ft_strfreejoin(const char *s1, const char *s2, int free1,
+					int free2);
 char			*justifytxt(char *str, int reverse, int len);
 int				get_flag_type(char *flag, t_pflag *type);
 
-char			*convertanynbr(va_list ap, t_pflag ptype);
-char			*convertanyhexa(unsigned int nbr, char *base, int baselen, t_pflag ptype);
-
+char			*convertnbr(va_list ap, t_pflag ptype);
+char			*converthexa(long long nbr, char *base, int baselen,
+					t_pflag ptype);
+char			*convertchar(char c, t_pflag ptype);
+char			*convertstr(va_list ap, t_pflag ptype);
 
 int				ft_printf(const char *, ...);
 
