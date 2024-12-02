@@ -6,37 +6,13 @@
 /*   By: dderny <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/28 14:16:10 by dderny            #+#    #+#             */
-/*   Updated: 2024/11/29 13:11:11 by dderny           ###   ########.fr       */
+/*   Updated: 2024/12/02 14:55:59 by dderny           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
+#include "libft.h"
 #include <stdarg.h>
-
-static char	*justifytxt(char fill);
-
-static char	*convertanynbr(va_list ap, t_pflag ptype)
-{
-	char		*str;
-	t_lltoainfo	info;
-	long long	nbr;
-	
-	if (ptype.flag == F_DECIMAL || ptype.flag == F_INT)
-		nbr = (long long)va_arg(ap, int);
-	if (ptype.flag == F_UNSIGNED)
-		nbr = (long long)va_arg(ap, unsigned int);
-	info = (t_lltoainfo){BASE10, 10, 0, 0};
-	if (ptype.atributs[F_PLUS])
-		info.sign = '+';
-	if (ptype.atributs[F_SPACE])
-		info.sign = ' ';
-	if (ptype.atributs[F_ZERO])
-		info.zeros = ptype.min;
-	str = ft_lltoa_base(nbr, info);
-	if (!str)
-		return (NULL);
-	return (justifytxt(ptype.atributs[F_MINUS], ptype.min, ptype.atributs[F_SPACE]))
-}
 
 static char	*convertany(va_list ap, t_pflag ptype)
 {
@@ -49,19 +25,18 @@ static char	*convertany(va_list ap, t_pflag ptype)
 		c = (char)va_arg(ap, char);
 		tmp = ft_strdup(&c);
 	}
-	if (ptype.flag == F_CHAR)
-		tmp = ft_strdup(&c);
-	if (ptype.flag == F_STRING)
-		tmp = ft_strdup(va_arg(ap, char *));
-	if (ptype.flag == F_STRING)
-		tmp = ft_strdup(va_arg(ap, char *));
+	if (ptype.flag == F_CHAR || ptype.flag == F_STRING)
+		tmp = convertanystr(ap, ptype);
 	if (ptype.flag == F_POINTER)
-		tmp = converthexa((unsigned int)va_arg(ap, void *));
+		tmp = convertanyhexa((unsigned int)va_arg(ap, void *), BASE16l, 16,
+				(t_pflag){.flag=F_POINTER, .atributs[F_TAG]=1, .atributs[F_ZERO]=1, .min=8});
 	if (ptype.flag == F_DECIMAL || ptype.flag == F_INT || ptype.flag == F_UNSIGNED)
 		tmp = convertanynbr(ap, ptype);
-	if (ptype.flag == F_HEXAL || ptype.flag == F_HEXAU)
-		tmp = converthexa(va_arg(ap, unsigned int), ptype);
-	return (tmp);
+	if (ptype.flag == F_HEXAL)
+		tmp = convertanyhexa(va_arg(ap, unsigned int), BASE16l, 16, ptype);
+	if (ptype.flag == F_HEXAU)
+		tmp = convertanyhexa(va_arg(ap, unsigned int), BASE16u, 16, ptype);
+	return (justifytxt(tmp, ptype.atributs[F_MINUS], ptype.min));
 }
 
 int	ft_printf(const char *format, ...)

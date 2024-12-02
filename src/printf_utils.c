@@ -6,7 +6,7 @@
 /*   By: dderny <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/28 14:45:48 by dderny            #+#    #+#             */
-/*   Updated: 2024/11/29 13:05:49 by dderny           ###   ########.fr       */
+/*   Updated: 2024/12/02 14:40:04 by dderny           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,31 +25,57 @@ static int	numberlen(long n, int baselen, char sign)
 	return (len);
 }
 
-char	*ft_lltoa_base(long n, t_lltoainfo info)
+char	*ft_lltoa_base(long long n, t_lltoainfo info)
 {
 	int			len;
 	long long	nb;
 	char		*str;
 
-	len = numberlen(n, info.baselen, sign) + zeros;
+	len = numberlen(n, info.baselen, info.sign) + info.zeros;
 	str = ft_calloc(len + 1, sizeof(char));
 	if (!str)
 		return (NULL);
-	ft_memset(str, base[0], zeros + 1);
-	nb = (long long)n;
+	ft_memset(str, info.base[0], info.zeros + 1);
+	nb = n;
 	if (nb < 0)
 	{
 		str[0] = '-';
 		nb *= -1;
 	}
-	else if (sign)
-		str[0] = sign;
+	else if (info.sign)
+		str[0] = info.sign;
 	while ((n && nb && len--) || (!n && len--))
 	{
-		str[len] = base[nb % baselen];
-		nb /= baselen;
+		str[len] = info.base[nb % info.baselen];
+		nb /= info.baselen;
 	}
 	return (str);
+}
+
+char	*justifytxt(char *str, int reverse, int len)
+{
+	int		strlen;
+	char	*res;
+
+	if (!str)
+		return (NULL);
+	strlen = ft_strlen(str);
+	if (len <= strlen)
+		return (str);
+	res = ft_calloc(len + 1, sizeof(char));
+	if (!res)
+		return (NULL);
+	if (reverse)
+	{
+		ft_memset(res, 32, len - strlen);
+		ft_strlcpy(res + len - strlen, str, strlen + 1);
+	}
+	else
+	{
+		ft_memset(res + strlen, 32, len - strlen);
+		ft_strlcpy(res, str, len + 1);
+	}
+	return (res);
 }
 
 int	get_flag_type(char *flag, t_pflag *type)
