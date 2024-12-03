@@ -6,7 +6,7 @@
 /*   By: dderny <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/28 14:16:10 by dderny            #+#    #+#             */
-/*   Updated: 2024/12/02 16:15:56 by dderny           ###   ########.fr       */
+/*   Updated: 2024/12/03 17:49:41 by dderny           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,9 +19,9 @@ static char	*convertany(va_list ap, t_pflag pt)
 	char	*tmp;
 
 	if (pt.flag == F_PERCENT)
-		return (convertchar('%', pt));
+		return (convertchar('%'));
 	if (pt.flag == F_CHAR)
-		tmp = convertchar((char)va_arg(ap, int), pt);
+		tmp = convertchar((char)va_arg(ap, int));
 	if (pt.flag == F_STRING)
 		tmp = convertstr(ap, pt);
 	if (pt.flag == F_POINTER)
@@ -37,7 +37,7 @@ static char	*convertany(va_list ap, t_pflag pt)
 	return (justifytxt(tmp, pt.atributs[F_MINUS], pt.min));
 }
 
-static int	processflag(va_list ap, char *format)
+static int	processflag(va_list ap, char *format, char **returnstr)
 {
 	t_pflag	pt;
 	int		next;
@@ -53,35 +53,43 @@ static int	processflag(va_list ap, char *format)
 			str = convertany(ap, pt);
 			if (!str)
 				return (-1);
-			write(0, str, ft_strlen(str));
+			*returnstr = str;
 		}
 	}
 	return (next);
 }
 
-int	ft_printf(const char *format, ...)
+int	vft_printf(const char *format, va_list ap)
 {
-	va_list	ap;
 	int		i;
-	int		last;
-	int		next;
-	int		count;
+	t_pdata	data;
 
 	i = 0;
-	count = 0;
-	va_start(ap, format);
+	data.count = 0;
 	while (format[i])
 	{
-		next = processflag(ap, (char *)format + i);
-		if (next)
+		data.next = processflag(ap, (char *)format + i, &data.str);
+		if (data.next)
 		{
-			write(0, format + last, i - last);
-			count += i - last;
-			i = i + next;
-			last = i;
+			write(0, format + data.last, i - data.last);
+			data.strlen = ft_strlen(data.str);
+			data.count += i - data.last + data.strlen;
+			write(0, data.str, data.strlen);
+			i = i + data.next;
+			data.last = i;
 		}
 		i++;
 	}
+	return (data.count);
+}
+
+int	ft_printf(const char *format, ...)
+{
+	va_list	ap;
+	int		count;
+
+	va_start(ap, format);
+	count = vft_printf(format, ap);
 	va_end(ap);
 	return (count);
 }

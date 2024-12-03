@@ -6,17 +6,19 @@
 /*   By: dderny <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/28 14:45:48 by dderny            #+#    #+#             */
-/*   Updated: 2024/12/02 15:29:15 by dderny           ###   ########.fr       */
+/*   Updated: 2024/12/03 17:48:42 by dderny           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
 #include "libft.h"
+#include <stdlib.h>
 
 static int	numberlen(long n, int baselen, char sign)
 {
 	int	len;
 
+	len = 0;
 	if (sign || n < 0 || !n)
 		len++;
 	while (n && ++len)
@@ -86,7 +88,7 @@ int	get_flag_type(char *flag, t_pflag *type)
 	tmp = ft_strchrpos(ATRIBUTES, *flag);
 	while (tmp >= 0 && flag++)
 	{
-		type->atributs[tmp];
+		type->atributs[tmp] = 1;
 		tmp = ft_strchrpos(ATRIBUTES, *flag);
 	}
 	type->min = ft_atoi(flag);
@@ -107,9 +109,9 @@ char	*ft_strfreejoin(const char *s1, const char *s2, int free1, int free2)
 	char	*str;
 	str = ft_strjoin(s1, s2);
 	if (free1)
-		free(s1);
+		free((void *)s1);
 	if (free2)
-		free(s2);
+		free((void *)s2);
 	if (!str)
 		return (NULL);
 	return (str);

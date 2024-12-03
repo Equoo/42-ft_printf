@@ -6,7 +6,7 @@
 /*   By: dderny <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/02 14:41:34 by dderny            #+#    #+#             */
-/*   Updated: 2024/12/02 15:40:38 by dderny           ###   ########.fr       */
+/*   Updated: 2024/12/03 17:49:01 by dderny           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ char	*converthexa(long long nbr, char *base, int baselen, t_pflag ptype)
 	return (str);
 }
 
-char	*convertchar(char c, t_pflag ptype)
+char	*convertchar(char c)
 {
 	char	*res;
 

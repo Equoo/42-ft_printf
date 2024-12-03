@@ -1,17 +1,15 @@
 NAME = libftprintf.a
 CC = cc
-AR = ar -rcs
+AR = ar -rcsT libft/libft.a
 CFLAGS = -Wall -Wextra -Werror -MMD
-SRCS = ft_printf.c
-SRCS_BONUS = f
-SRCS_ALL = $(SRCS) $(SRCS_BONUS)
+SRCS = ft_printf.c\
+       printf_utils.c\
+       converts.c\
 
 DIR_OBJ = obj/
 SRC_DIR = src/
 INC_DIR = headers/
 OBJS = ${patsubst %.c,$(DIR_OBJ)%.o, $(SRCS)}
-OBJS_BONUS = ${patsubst %.c,$(DIR_OBJ)%.o, $(SRCS_BONUS)}
-OBJS_ALL = ${OBJS} ${OBJS_BONUS}
 
 DEPS= ${patsubst %.c,$(DIR_OBJ)%.d, $(SRCS_ALL)}
 -include $(DEPS)
@@ -22,10 +20,6 @@ endif
 
 .PHONY: all
 all: $(NAME)
-
-.PHONY: bonus
-bonus: $(OBJS_BONUS)
-	$(MAKE) BONUS=1 all
 
 %/:
 	mkdir -p $@
@@ -39,12 +33,12 @@ $(NAME): $(DIR_OBJ) $(OBJS) Makefile
 
 .PHONY: clean
 clean:
-	$(MAKE) clean -C ./libft
+	$(MAKE) clean --no-print-directory -C ./libft
 	rm -Rf $(DIR_OBJ)
 
 .PHONY: fclean
 fclean: clean
-	$(MAKE) fclean -C ./libft
+	$(MAKE) fclean --no-print-directory -C ./libft
 	rm -f $(NAME)
 
 .PHONY: re

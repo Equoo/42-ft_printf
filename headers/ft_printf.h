@@ -6,7 +6,7 @@
 /*   By: dderny <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/28 14:16:10 by dderny            #+#    #+#             */
-/*   Updated: 2024/12/02 15:41:17 by dderny           ###   ########.fr       */
+/*   Updated: 2024/12/03 17:49:17 by dderny           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,6 +56,15 @@ typedef struct s_lltoainfo
 	int			zeros;
 }				t_lltoainfo;
 
+typedef struct s_pdata
+{
+	int			last;
+	int			next;
+	int			count;
+	char		*str;
+	int			strlen;
+}				t_pdata;
+
 char			*ft_lltoa_base(long long n, t_lltoainfo info);
 char			*ft_strfreejoin(const char *s1, const char *s2, int free1,
 					int free2);
@@ -65,9 +74,10 @@ int				get_flag_type(char *flag, t_pflag *type);
 char			*convertnbr(va_list ap, t_pflag ptype);
 char			*converthexa(long long nbr, char *base, int baselen,
 					t_pflag ptype);
-char			*convertchar(char c, t_pflag ptype);
+char			*convertchar(char c);
 char			*convertstr(va_list ap, t_pflag ptype);
 
+int				vft_printf(const char *format, va_list ap);
 int				ft_printf(const char *, ...);
 
 #endif
