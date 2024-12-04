@@ -6,7 +6,7 @@
 /*   By: dderny <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/02 14:41:34 by dderny            #+#    #+#             */
-/*   Updated: 2024/12/03 17:49:01 by dderny           ###   ########.fr       */
+/*   Updated: 2024/12/04 14:02:43 by dderny           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ char	*convertnbr(va_list ap, t_pflag ptype)
 		info.sign = '+';
 	if (ptype.atributs[F_SPACE])
 		info.sign = ' ';
-	if (ptype.atributs[F_ZERO])
+	if (ptype.atributs[F_ZERO] || ptype.atributs[F_POINT])
 		info.zeros = ptype.min;
 	str = ft_lltoa_base(nbr, info);
 	return (str);
@@ -41,13 +41,13 @@ char	*converthexa(long long nbr, char *base, int baselen, t_pflag ptype)
 	t_lltoainfo	info;
 	
 	info = (t_lltoainfo){base, baselen, 0, 0};		
-	if (ptype.atributs[F_ZERO] && ptype.atributs[F_TAG])
+	if (ptype.atributs[F_ZERO] && ptype.atributs[F_TAG] && ptype.min > 2)
 		info.zeros = ptype.min - 2;
 	if (ptype.atributs[F_ZERO] && !ptype.atributs[F_TAG])
 		info.zeros = ptype.min;
 	str = ft_lltoa_base(nbr, info);
 	if (str && ptype.atributs[F_TAG])
-		ft_strfreejoin("0x", str, 0, 1);
+		str = ft_strfreejoin(base + baselen, str, 0, 1);
 	return (str);
 }
 
@@ -75,6 +75,6 @@ char	*convertstr(va_list ap, t_pflag ptype)
 	res = ft_calloc(strlen + 1, sizeof(char));
 	if (!res)
 		return (NULL);
-	ft_strlcpy(res, cpystr, strlen);
+	ft_strlcpy(res, cpystr, strlen + 1);
 	return (res);
 }

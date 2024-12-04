@@ -6,7 +6,7 @@
 /*   By: dderny <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/28 14:16:10 by dderny            #+#    #+#             */
-/*   Updated: 2024/12/03 17:49:17 by dderny           ###   ########.fr       */
+/*   Updated: 2024/12/04 13:59:13 by dderny           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,8 +15,8 @@
 # include <stdarg.h>
 
 # define BASE10 "0123456789"
-# define BASE16l "0123456789abcdef"
-# define BASE16u "0123456789ABCDEF"
+# define BASE16l "0123456789abcdef0x"
+# define BASE16u "0123456789ABCDEF0X"
 
 # define ATRIBUTES "# 0+-."
 # define ATRIBUTESLEN 6

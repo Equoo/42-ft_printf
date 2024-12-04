@@ -6,7 +6,7 @@
 /*   By: dderny <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/28 14:16:10 by dderny            #+#    #+#             */
-/*   Updated: 2024/12/03 17:49:41 by dderny           ###   ########.fr       */
+/*   Updated: 2024/12/04 13:41:11 by dderny           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,8 @@ static char	*convertany(va_list ap, t_pflag pt)
 		tmp = converthexa((long long)va_arg(ap, unsigned int), BASE16l, 16, pt);
 	if (pt.flag == F_HEXAU)
 		tmp = converthexa((long long)va_arg(ap, unsigned int), BASE16u, 16, pt);
+	if (pt.atributs[F_POINT] || pt.atributs[F_ZERO])
+		pt.min = 0;
 	return (justifytxt(tmp, pt.atributs[F_MINUS], pt.min));
 }
 
@@ -66,20 +68,22 @@ int	vft_printf(const char *format, va_list ap)
 
 	i = 0;
 	data.count = 0;
+	data.last = 0;
 	while (format[i])
 	{
 		data.next = processflag(ap, (char *)format + i, &data.str);
 		if (data.next)
 		{
-			write(0, format + data.last, i - data.last);
+			write(STDOUT_FILENO, format + data.last, i - data.last);
 			data.strlen = ft_strlen(data.str);
 			data.count += i - data.last + data.strlen;
-			write(0, data.str, data.strlen);
+			write(STDOUT_FILENO, data.str, data.strlen);
 			i = i + data.next;
-			data.last = i;
+			data.last = i + 1;
 		}
 		i++;
 	}
+	write(STDOUT_FILENO, format + data.last, i - data.last);
 	return (data.count);
 }
 

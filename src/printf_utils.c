@@ -6,7 +6,7 @@
 /*   By: dderny <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/28 14:45:48 by dderny            #+#    #+#             */
-/*   Updated: 2024/12/03 17:48:42 by dderny           ###   ########.fr       */
+/*   Updated: 2024/12/04 13:38:02 by dderny           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,15 +14,17 @@
 #include "libft.h"
 #include <stdlib.h>
 
-static int	numberlen(long n, int baselen, char sign)
+static int	numberlen(long n, t_lltoainfo info)
 {
 	int	len;
 
 	len = 0;
-	if (sign || n < 0 || !n)
+	if (info.sign || n < 0 || !n)
 		len++;
 	while (n && ++len)
-		n /= baselen;
+		n /= info.baselen;
+	if (info.zeros > len)
+		len = info.zeros;
 	return (len);
 }
 
@@ -32,11 +34,11 @@ char	*ft_lltoa_base(long long n, t_lltoainfo info)
 	long long	nb;
 	char		*str;
 
-	len = numberlen(n, info.baselen, info.sign) + info.zeros;
+	len = numberlen(n, info);
 	str = ft_calloc(len + 1, sizeof(char));
 	if (!str)
 		return (NULL);
-	ft_memset(str, info.base[0], info.zeros + 1);
+	ft_memset(str, info.base[0], info.zeros);
 	nb = n;
 	if (nb < 0)
 	{
@@ -66,15 +68,15 @@ char	*justifytxt(char *str, int reverse, int len)
 	res = ft_calloc(len + 1, sizeof(char));
 	if (!res)
 		return (NULL);
-	if (reverse)
+	if (!reverse)
 	{
 		ft_memset(res, 32, len - strlen);
 		ft_strlcpy(res + len - strlen, str, strlen + 1);
 	}
 	else
 	{
-		ft_memset(res + strlen, 32, len - strlen);
 		ft_strlcpy(res, str, len + 1);
+		ft_memset(res + strlen, 32, len - strlen);
 	}
 	return (res);
 }

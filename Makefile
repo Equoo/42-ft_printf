@@ -1,22 +1,19 @@
 NAME = libftprintf.a
 CC = cc
-AR = ar -rcsT libft/libft.a
+AR = ar -rcs
+ARMERGE = echo "create libftprintf.a\naddlib libft/libft.a\naddlib libftprintf.a\nsave\nend" | ar -M
+
 CFLAGS = -Wall -Wextra -Werror -MMD
 SRCS = ft_printf.c\
        printf_utils.c\
-       converts.c\
-
+       converts.c
 DIR_OBJ = obj/
 SRC_DIR = src/
 INC_DIR = headers/
 OBJS = ${patsubst %.c,$(DIR_OBJ)%.o, $(SRCS)}
 
-DEPS= ${patsubst %.c,$(DIR_OBJ)%.d, $(SRCS_ALL)}
+DEPS= ${patsubst %.c,$(DIR_OBJ)%.d, $(SRCS)}
 -include $(DEPS)
-
-ifdef BONUS
-	OBJS = ${patsubst %.c,$(DIR_OBJ)%.o, $(SRCS_ALL)}
-endif
 
 .PHONY: all
 all: $(NAME)
@@ -27,9 +24,10 @@ all: $(NAME)
 $(DIR_OBJ)%.o: $(SRC_DIR)%.c
 	$(CC) $(CFLAGS) -I $(INC_DIR) -I libft -c $< -o $@
 
-$(NAME): $(DIR_OBJ) $(OBJS) Makefile
+$(NAME): libft/libft.a $(DIR_OBJ) $(OBJS) Makefile
 	$(MAKE) -C ./libft
 	$(AR) $@ $(OBJS)
+	$(ARMERGE)
 
 .PHONY: clean
 clean:
