@@ -6,7 +6,7 @@
 /*   By: dderny <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/28 14:16:10 by dderny            #+#    #+#             */
-/*   Updated: 2024/12/04 13:59:13 by dderny           ###   ########.fr       */
+/*   Updated: 2024/12/04 14:43:27 by dderny           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,7 @@ typedef struct s_lltoainfo
 	int			baselen;
 	char		sign;
 	int			zeros;
+	char		*prefix;
 }				t_lltoainfo;
 
 typedef struct s_pdata

@@ -2,6 +2,7 @@ NAME = libftprintf.a
 CC = cc
 AR = ar -rcs
 ARMERGE = echo "create libftprintf.a\naddlib libft/libft.a\naddlib libftprintf.a\nsave\nend" | ar -M
+LIB = libft/libft.a
 
 CFLAGS = -Wall -Wextra -Werror -MMD
 SRCS = ft_printf.c\
@@ -24,8 +25,10 @@ all: $(NAME)
 $(DIR_OBJ)%.o: $(SRC_DIR)%.c
 	$(CC) $(CFLAGS) -I $(INC_DIR) -I libft -c $< -o $@
 
-$(NAME): libft/libft.a $(DIR_OBJ) $(OBJS) Makefile
+$(LIB):
 	$(MAKE) -C ./libft
+
+$(NAME): $(LIB) $(DIR_OBJ) $(OBJS) Makefile
 	$(AR) $@ $(OBJS)
 	$(ARMERGE)
 

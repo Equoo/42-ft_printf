@@ -6,7 +6,7 @@
 /*   By: dderny <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/28 14:45:48 by dderny            #+#    #+#             */
-/*   Updated: 2024/12/04 13:38:02 by dderny           ###   ########.fr       */
+/*   Updated: 2024/12/04 15:10:55 by dderny           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,8 @@ static int	numberlen(long n, t_lltoainfo info)
 		len++;
 	while (n && ++len)
 		n /= info.baselen;
+	if (info.prefix)
+		len += ft_strlen(info.prefix);
 	if (info.zeros > len)
 		len = info.zeros;
 	return (len);
@@ -41,10 +43,9 @@ char	*ft_lltoa_base(long long n, t_lltoainfo info)
 	ft_memset(str, info.base[0], info.zeros);
 	nb = n;
 	if (nb < 0)
-	{
 		str[0] = '-';
+	if (nb < 0)
 		nb *= -1;
-	}
 	else if (info.sign)
 		str[0] = info.sign;
 	while ((n && nb && len--) || (!n && len--))
@@ -52,6 +53,9 @@ char	*ft_lltoa_base(long long n, t_lltoainfo info)
 		str[len] = info.base[nb % info.baselen];
 		nb /= info.baselen;
 	}
+	/* if (info.prefix)
+		while (info.prefix[n])
+			str[len--] = info.prefix[n--]; */
 	return (str);
 }
 

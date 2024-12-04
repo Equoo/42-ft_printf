@@ -6,7 +6,7 @@
 /*   By: dderny <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/28 14:16:10 by dderny            #+#    #+#             */
-/*   Updated: 2024/12/04 13:41:11 by dderny           ###   ########.fr       */
+/*   Updated: 2024/12/04 15:14:54 by dderny           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,9 +25,10 @@ static char	*convertany(va_list ap, t_pflag pt)
 	if (pt.flag == F_STRING)
 		tmp = convertstr(ap, pt);
 	if (pt.flag == F_POINTER)
-		tmp = converthexa((long long)va_arg(ap, void *), BASE16l, 16,
-				(t_pflag){.flag = F_POINTER, .atributs[F_TAG] = 1,
-				.atributs[F_ZERO] = 1, .min = 8});
+	{
+		pt.atributs[F_TAG] = 1;
+		tmp = converthexa((long long)va_arg(ap, void *), BASE16l, 16, pt);
+	}
 	if (pt.flag == F_DECIMAL || pt.flag == F_INT || pt.flag == F_UNSIGNED)
 		tmp = convertnbr(ap, pt);
 	if (pt.flag == F_HEXAL)
@@ -66,6 +67,8 @@ int	vft_printf(const char *format, va_list ap)
 	int		i;
 	t_pdata	data;
 
+	if (!format)
+		return (0);
 	i = 0;
 	data.count = 0;
 	data.last = 0;
