@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   printf_utils.c                                     :+:      :+:    :+:   */
+/*   printf_utils_bonus.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: dderny <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/28 14:45:48 by dderny            #+#    #+#             */
-/*   Updated: 2024/12/05 16:58:57 by dderny           ###   ########.fr       */
+/*   Updated: 2024/12/05 18:22:56 by dderny           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,29 +14,28 @@
 #include "libft.h"
 #include <stdlib.h>
 
-char	*justifytxt(char *str, int reverse, int len)
+char	*justifytxt(char *str, int reverse, int len, int *strlen)
 {
-	int		strlen;
 	char	*res;
 
 	if (!str)
 		return (NULL);
-	strlen = ft_strlen(str);
-	if (len <= strlen)
+	if (len <= *strlen)
 		return (str);
 	res = ft_calloc(len + 1, sizeof(char));
 	if (!res)
 		return (NULL);
 	if (!reverse)
 	{
-		ft_memset(res, 32, len - strlen);
-		ft_strlcpy(res + len - strlen, str, strlen + 1);
+		ft_memset(res, 32, len - *strlen);
+		ft_strlcpy(res + len - *strlen, str, *strlen + 1);
 	}
 	else
 	{
 		ft_strlcpy(res, str, len + 1);
-		ft_memset(res + strlen, 32, len - strlen);
+		ft_memset(res + *strlen, 32, len - *strlen);
 	}
+	*strlen = len;
 	free(str);
 	return (res);
 }

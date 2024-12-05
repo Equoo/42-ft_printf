@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_printf.c                                        :+:      :+:    :+:   */
+/*   ft_printf_bonus.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: dderny <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/28 14:16:10 by dderny            #+#    #+#             */
-/*   Updated: 2024/12/05 16:55:05 by dderny           ###   ########.fr       */
+/*   Updated: 2024/12/05 18:38:45 by dderny           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,30 +15,35 @@
 #include "unistd.h"
 #include <stdlib.h>
 
-static char	*convertany(va_list ap, t_pflag pt)
+static char	*convertany(va_list ap, t_pflag pt, int *len)
 {
 	char	*tmp;
 
 	if (pt.flag == F_PERCENT)
-		return (convertchar('%'));
+		return (convertchar('%', len));
 	if (pt.flag == F_CHAR)
-		tmp = convertchar((char)va_arg(ap, int));
+		tmp = convertchar((char)va_arg(ap, int), len);
 	if (pt.flag == F_STRING)
-		tmp = convertstr(ap, pt);
+		tmp = convertstr(ap, pt, len);
 	if (pt.flag == F_POINTER)
-	{
-		pt.atributs[F_TAG] = 1;
-		tmp = converthexa((unsigned long)va_arg(ap, void *), BASE16l, 16, pt);
+	{ // FQIRE DQNAS UNE FUNC
+		// if (!cpystr)
+		// {
+		// 	*len = 6;
+		// 	return (ft_strdup("(null)"));
+		// }
+		// pt.atributs[F_TAG] = 1;
+		// tmp = converthexa((__uint64_t)va_arg(ap, void *), (t_nbrbase){BASE16l, 16}, pt, len);
 	}
 	if (pt.flag == F_DECIMAL || pt.flag == F_INT || pt.flag == F_UNSIGNED)
-		tmp = convertnbr(ap, pt);
+		tmp = convertnbr(ap, pt, len);
 	if (pt.flag == F_HEXAL)
-		tmp = converthexa((long long)va_arg(ap, unsigned int), BASE16l, 16, pt);
+		tmp = converthexa((long long)va_arg(ap, __uint32_t), (t_nbrbase){BASE16l, 16}, pt, len);
 	if (pt.flag == F_HEXAU)
-		tmp = converthexa((long long)va_arg(ap, unsigned int), BASE16u, 16, pt);
+		tmp = converthexa((long long)va_arg(ap, __uint32_t), (t_nbrbase){BASE16u, 16}, pt, len);
 	if (pt.atributs[F_POINT] || pt.atributs[F_ZERO])
 		pt.min = 0;
-	return (justifytxt(tmp, pt.atributs[F_MINUS], pt.min));
+	return (justifytxt(tmp, pt.atributs[F_MINUS], pt.min, len));
 }
 
 static int	get_flag_type(char *flag, t_pflag *type)
@@ -66,7 +71,7 @@ static int	get_flag_type(char *flag, t_pflag *type)
 	return (0);
 }
 
-static int	processflag(va_list ap, char *format, char **returnstr)
+static int	processflag(va_list ap, char *format, t_pdata *data)
 {
 	t_pflag	pt;
 	int		next;
@@ -79,8 +84,8 @@ static int	processflag(va_list ap, char *format, char **returnstr)
 		next = get_flag_type((char *)format + 1, &pt);
 		if (next > 0)
 		{
-			str = convertany(ap, pt);			
-			*returnstr = str;
+			str = convertany(ap, pt, &data->strlen);			
+			data->str = str;
 			if (!str)
 				return (-1);
 		}
@@ -101,13 +106,12 @@ int	vft_printf(const char *format, va_list ap)
 	data.str = NULL;
 	while (format[i])
 	{
-		data.next = processflag(ap, (char *)format + i, &data.str);
+		data.next = processflag(ap, (char *)format + i, &data);
 		if (data.next == -1)
 			return (-1);
 		else if (data.next)
 		{
 			write(STDOUT_FILENO, format + data.last, i - data.last);
-			data.strlen = ft_strlen(data.str);
 			data.count += i - data.last + data.strlen;
 			write(STDOUT_FILENO, data.str, data.strlen);
 			free(data.str);

@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   printf_nbrtostr.c                                  :+:      :+:    :+:   */
+/*   printf_nbrtostr_bonus.c                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: dderny <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/05 13:58:21 by dderny            #+#    #+#             */
-/*   Updated: 2024/12/05 15:02:19 by dderny           ###   ########.fr       */
+/*   Updated: 2024/12/05 18:25:36 by dderny           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ static int	numberlen(long long n, t_ltoainfo info)
 	len = 0;
 	nb = n;
 	while (nb && ++len)
-		nb /= info.baselen;
+		nb /= info.base.len;
 	if (info.zeronbr && info.zeros > len)
 		len = info.zeros;
 	if (info.sign || n < 0 || !n)
@@ -52,17 +52,18 @@ static void	addprefix(char *str, long long n, t_ltoainfo info)
 	}
 }
 
-char	*ft_lltoa_base(long long n, t_ltoainfo info)
+char	*ft_lltoa_base(long long n, t_ltoainfo info, int *strlen)
 {
 	int			len;
 	long long	nb;
 	char		*str;
 
 	len = numberlen(n, info);
+	*strlen = len;
 	str = ft_calloc(len + 1, sizeof(char));
 	if (!str)
 		return (NULL);
-	ft_memset(str, info.base[0], len);
+	ft_memset(str, info.base.str[0], len);
 	nb = n;
 	if (nb < 0)
 		str[0] = '-';
@@ -72,8 +73,8 @@ char	*ft_lltoa_base(long long n, t_ltoainfo info)
 		str[0] = info.sign;
 	while ((n && nb && len--) || (!n && len--))
 	{
-		str[len] = info.base[nb % info.baselen];
-		nb /= info.baselen;
+		str[len] = info.base.str[nb % info.base.len];
+		nb /= info.base.len;
 	}
 	if (info.prefix)
 		addprefix(str, n, info);
@@ -88,7 +89,7 @@ static int	unumberlen(unsigned long n, t_ltoainfo info)
 	len = 0;
 	nb = n;
 	while (nb && ++len)
-		nb /= info.baselen;
+		nb /= info.base.len;
 	if (info.zeronbr && info.zeros > len)
 		len = info.zeros;
 	if (info.sign || !n)
@@ -100,20 +101,21 @@ static int	unumberlen(unsigned long n, t_ltoainfo info)
 	return (len);
 }
 
-char	*ft_ultoa_base(unsigned long n, t_ltoainfo info)
+char	*ft_ultoa_base(unsigned long n, t_ltoainfo info, int *strlen)
 {
 	int len;
 	char *str;
 
 	len = unumberlen(n, info);
+	*strlen = len;
 	str = ft_calloc(len + 1, sizeof(char));
 	if (!str)
 		return (NULL);
-	ft_memset(str, info.base[0], len);
+	ft_memset(str, info.base.str[0], len);
 	while (len--)
 	{
-		str[len] = info.base[n % info.baselen];
-		n /= info.baselen;
+		str[len] = info.base.str[n % info.base.len];
+		n /= info.base.len;
 	}
 	if (info.sign)
 		str[0] = info.sign;

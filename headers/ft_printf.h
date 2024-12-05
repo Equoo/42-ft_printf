@@ -6,7 +6,7 @@
 /*   By: dderny <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/28 14:16:10 by dderny            #+#    #+#             */
-/*   Updated: 2024/12/05 14:10:38 by dderny           ###   ########.fr       */
+/*   Updated: 2024/12/05 18:24:41 by dderny           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,10 +48,15 @@ typedef struct s_pflag
 	int			min;
 }				t_pflag;
 
+typedef struct s_nbrbase
+{
+	char		*str;
+	int			len;
+}				t_nbrbase;
+
 typedef struct s_ltoainfo
 {
-	char		*base;
-	int			baselen;
+	t_nbrbase	base;
 	char		sign;
 	int			zeros;
 	int			zeronbr;
@@ -67,18 +72,18 @@ typedef struct s_pdata
 	int			strlen;
 }				t_pdata;
 
-char			*ft_lltoa_base(long long n, t_ltoainfo info);
-char			*ft_ultoa_base(unsigned long n, t_ltoainfo info);
+char			*ft_lltoa_base(long long n, t_ltoainfo info, int *strlen);
+char			*ft_ultoa_base(unsigned long n, t_ltoainfo info, int *strlen);
 
 char			*ft_strfreejoin(const char *s1, const char *s2, int free1,
 					int free2);
-char			*justifytxt(char *str, int reverse, int len);
+char			*justifytxt(char *str, int reverse, int len, int *strlen);
 
-char			*convertnbr(va_list ap, t_pflag ptype);
-char			*converthexa(long long nbr, char *base, int baselen,
-					t_pflag ptype);
-char			*convertchar(char c);
-char			*convertstr(va_list ap, t_pflag ptype);
+char			*convertnbr(va_list ap, t_pflag ptype, int *len);
+char			*converthexa(long long nbr, t_nbrbase base,
+					t_pflag ptype, int *len);
+char			*convertchar(char c, int *len);
+char			*convertstr(va_list ap, t_pflag ptype, int *len);
 
 int				vft_printf(const char *format, va_list ap);
 int				ft_printf(const char *, ...);
