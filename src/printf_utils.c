@@ -6,58 +6,13 @@
 /*   By: dderny <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/28 14:45:48 by dderny            #+#    #+#             */
-/*   Updated: 2024/12/04 15:10:55 by dderny           ###   ########.fr       */
+/*   Updated: 2024/12/05 16:58:57 by dderny           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
 #include "libft.h"
 #include <stdlib.h>
-
-static int	numberlen(long n, t_lltoainfo info)
-{
-	int	len;
-
-	len = 0;
-	if (info.sign || n < 0 || !n)
-		len++;
-	while (n && ++len)
-		n /= info.baselen;
-	if (info.prefix)
-		len += ft_strlen(info.prefix);
-	if (info.zeros > len)
-		len = info.zeros;
-	return (len);
-}
-
-char	*ft_lltoa_base(long long n, t_lltoainfo info)
-{
-	int			len;
-	long long	nb;
-	char		*str;
-
-	len = numberlen(n, info);
-	str = ft_calloc(len + 1, sizeof(char));
-	if (!str)
-		return (NULL);
-	ft_memset(str, info.base[0], info.zeros);
-	nb = n;
-	if (nb < 0)
-		str[0] = '-';
-	if (nb < 0)
-		nb *= -1;
-	else if (info.sign)
-		str[0] = info.sign;
-	while ((n && nb && len--) || (!n && len--))
-	{
-		str[len] = info.base[nb % info.baselen];
-		nb /= info.baselen;
-	}
-	/* if (info.prefix)
-		while (info.prefix[n])
-			str[len--] = info.prefix[n--]; */
-	return (str);
-}
 
 char	*justifytxt(char *str, int reverse, int len)
 {
@@ -82,32 +37,8 @@ char	*justifytxt(char *str, int reverse, int len)
 		ft_strlcpy(res, str, len + 1);
 		ft_memset(res + strlen, 32, len - strlen);
 	}
+	free(str);
 	return (res);
-}
-
-int	get_flag_type(char *flag, t_pflag *type)
-{
-	char	*sflag;
-	int		tmp;
-
-	sflag = flag;
-	tmp = ft_strchrpos(ATRIBUTES, *flag);
-	while (tmp >= 0 && flag++)
-	{
-		type->atributs[tmp] = 1;
-		tmp = ft_strchrpos(ATRIBUTES, *flag);
-	}
-	type->min = ft_atoi(flag);
-	while (ft_isdigit(*flag))
-		flag++;
-	type->flag = F_NONE;
-	tmp = ft_strchrpos(FLAGS, *flag);
-	if (tmp >= 0 && flag++)
-	{
-		type->flag = (t_prnt_flag)(ATRIBUTESLEN + tmp);
-		return (flag - sflag);
-	}
-	return (0);
 }
 
 char	*ft_strfreejoin(const char *s1, const char *s2, int free1, int free2)

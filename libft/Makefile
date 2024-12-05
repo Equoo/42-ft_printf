@@ -59,7 +59,7 @@ all: $(NAME)
 $(DIR_OBJ):
 	mkdir -p $@
 
-$(DIR_OBJ)%.o: %.c
+$(DIR_OBJ)%.o: %.c Makefile
 	$(CC) $(CFLAGS) -c $< -o $@
 
 $(NAME): $(DIR_OBJ) $(OBJS) Makefile

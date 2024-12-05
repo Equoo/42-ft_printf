@@ -6,7 +6,7 @@
 /*   By: dderny <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 12:00:07 by dderny            #+#    #+#             */
-/*   Updated: 2024/12/02 15:32:14 by dderny           ###   ########.fr       */
+/*   Updated: 2024/12/05 12:02:01 by dderny           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,8 @@ size_t	ft_strlen(const char *str)
 {
 	const char	*const_str;
 
+	if (!str)
+		return (0);
 	const_str = str;
 	while (*const_str != '\0')
 		++const_str;

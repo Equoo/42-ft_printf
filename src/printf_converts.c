@@ -1,15 +1,14 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   converts.c                                         :+:      :+:    :+:   */
+/*   printf_converts_bonus.c                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: dderny <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/02 14:41:34 by dderny            #+#    #+#             */
-/*   Updated: 2024/12/04 14:59:58 by dderny           ###   ########.fr       */
+/*   Updated: 2024/12/05 17:01:56 by dderny           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
 
 #include "ft_printf.h"
 #include "libft.h"
@@ -17,18 +16,20 @@
 char	*convertnbr(va_list ap, t_pflag ptype)
 {
 	char		*str;
-	t_lltoainfo	info;
+	t_ltoainfo	info;
 	long long	nbr;
-	
+
 	if (ptype.flag == F_DECIMAL || ptype.flag == F_INT)
 		nbr = (long long)va_arg(ap, int);
 	if (ptype.flag == F_UNSIGNED)
 		nbr = (long long)va_arg(ap, unsigned int);
-	info = (t_lltoainfo){BASE10, 10, 0, 0, NULL};
+	info = (t_ltoainfo){BASE10, 10, 0, 0, 0, NULL};
 	if (ptype.atributs[F_PLUS])
 		info.sign = '+';
 	if (ptype.atributs[F_SPACE])
 		info.sign = ' ';
+	if (ptype.atributs[F_POINT])
+		info.zeronbr = 1;
 	if (ptype.atributs[F_ZERO] || ptype.atributs[F_POINT])
 		info.zeros = ptype.min;
 	str = ft_lltoa_base(nbr, info);
@@ -38,11 +39,13 @@ char	*convertnbr(va_list ap, t_pflag ptype)
 char	*converthexa(long long nbr, char *base, int baselen, t_pflag ptype)
 {
 	char		*str;
-	t_lltoainfo	info;
-	
-	info = (t_lltoainfo){base, baselen, 0, 0, NULL};		
+	t_ltoainfo	info;
+
+	info = (t_ltoainfo){base, baselen, 0, 0, 0, NULL};
 	if (ptype.atributs[F_TAG])
 		info.prefix = base + baselen;
+	if (ptype.atributs[F_POINT])
+		info.zeronbr = 1;
 	if (ptype.atributs[F_ZERO] || ptype.atributs[F_POINT])
 		info.zeros = ptype.min;
 	if (ptype.flag != F_HEXAL && ptype.flag != F_HEXAU)
@@ -52,7 +55,10 @@ char	*converthexa(long long nbr, char *base, int baselen, t_pflag ptype)
 		if (ptype.atributs[F_PLUS])
 			info.sign = '+';
 	}
-	str = ft_lltoa_base(nbr, info);
+	if (ptype.flag == F_POINTER)
+		str = ft_ultoa_base(nbr, info);
+	else
+		str = ft_lltoa_base(nbr, info);
 	return (str);
 }
 
@@ -73,7 +79,10 @@ char	*convertstr(va_list ap, t_pflag ptype)
 	char	*res;
 	int		strlen;
 
-	cpystr = va_arg(ap, char *);
+	cpystr = NULL;
+	cpystr = (char *)va_arg(ap, char *);
+	if (!cpystr)
+		return (NULL);
 	strlen = ft_strlen(cpystr);
 	if (ptype.atributs[F_POINT] && ptype.flag != F_CHAR && strlen > ptype.min)
 		strlen = ptype.min;
