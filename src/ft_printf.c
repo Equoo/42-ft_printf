@@ -1,0 +1,130 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_printf_bonus.c                                  :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: dderny <marvin@42.fr>                      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/11/28 14:16:10 by dderny            #+#    #+#             */
+/*   Updated: 2024/12/07 13:44:56 by dderny           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "ft_printf.h"
+#include "libft.h"
+#include "unistd.h"
+#include <stdlib.h>
+
+static char	*convertany(va_list ap, t_pflag pt, int *len)
+{
+	char	*tmp;
+
+	tmp = NULL;
+	if (pt.flag == F_PERCENT)
+		return (convertchar('%', len));
+	if (pt.flag == F_CHAR)
+		tmp = convertchar((char)va_arg(ap, int), len);
+	if (pt.flag == F_STRING)
+		tmp = convertstr(ap, pt, len);
+	if (pt.flag == F_POINTER)
+		tmp = convertpointer(ap, pt, len);
+	if (pt.flag == F_DECIMAL || pt.flag == F_INT || pt.flag == F_UNSIGNED)
+		tmp = convertnbr(ap, pt, len);
+	if (pt.flag == F_HEXAL)
+		tmp = converthexa((long long)va_arg(ap, __uint32_t),
+				(t_nbrbase){BASE16L, 16}, pt, len);
+	if (pt.flag == F_HEXAU)
+		tmp = converthexa((long long)va_arg(ap, __uint32_t),
+				(t_nbrbase){BASE16U, 16}, pt, len);
+	return (justifytxt(tmp, pt.atributs[F_MINUS], pt.min, len));
+}
+
+static int	get_flag_type(char *flag, t_pflag *type)
+{
+	char	*sflag;
+	int		tmp;
+
+	sflag = flag;
+	tmp = ft_strchrpos(ATRIBUTES, *flag);
+	while (tmp >= 0 && flag++)
+	{
+		type->atributs[tmp] = 1;
+		tmp = ft_strchrpos(ATRIBUTES, *flag);
+	}
+	type->min = m_atoi(&flag);
+	if (*flag == '.' && flag++)
+	{
+		type->atributs[F_POINT] = m_atoi(&flag) + 1;
+	}
+	type->flag = F_NONE;
+	tmp = ft_strchrpos(FLAGS, *flag);
+	if (tmp >= 0 && flag++)
+	{
+		type->flag = (t_prnt_flag)(ATRIBUTESLEN + tmp);
+		return (flag - sflag);
+	}
+	return (0);
+}
+
+static int	processflag(va_list ap, char *format, t_pdata *data)
+{
+	t_pflag	pt;
+	int		next;
+	char	*str;
+
+	next = 0;
+	if ((unsigned char)*format == '%')
+	{
+		pt = (t_pflag){};
+		next = get_flag_type((char *)format + 1, &pt);
+		if (next > 0)
+		{
+			str = convertany(ap, pt, &data->strlen);
+			data->str = str;
+			if (!str)
+				return (-1);
+		}
+	}
+	return (next);
+}
+
+int	vft_printf(const char *format, va_list ap)
+{
+	int		i;
+	t_pdata	data;
+
+	i = -1;
+	data.count = 0;
+	data.last = 0;
+	data.str = NULL;
+	while (format[++i])
+	{
+		data.next = processflag(ap, (char *)format + i, &data);
+		if (data.next == -1)
+			return (-1);
+		if (!data.next)
+			continue ;
+		write(STDOUT_FILENO, format + data.last, i - data.last);
+		data.count += i - data.last + data.strlen;
+		write(STDOUT_FILENO, data.str, data.strlen);
+		free(data.str);
+		i = i + data.next;
+		data.last = i + 1;
+	}
+	data.count += i - data.last;
+	write(STDOUT_FILENO, format + data.last, i - data.last);
+	return (data.count);
+}
+
+int	ft_printf(const char *format, ...)
+{
+	va_list	ap;
+	int		count;
+
+	if (!format)
+		return (-1);
+	va_start(ap, format);
+	count = vft_printf(format, ap);
+	va_end(ap);
+	return (count);
+}

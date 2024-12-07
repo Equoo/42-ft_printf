@@ -5,14 +5,10 @@ ARMERGE = echo "create libftprintf.a\naddlib libft/libft.a\naddlib libftprintf.a
 LIB = libft/libft.a
 
 CFLAGS = -Wall -Wextra -Werror -MMD -g3
-#PRINTF_SRCS = ft_printf.c\
-#       printf_utils.c\
-#       printf_converts.c\
-#       printf_nbrtostr.c
-PRINTF_SRCS = ft_printf_bonus.c\
-       printf_utils_bonus.c\
-       printf_converts_bonus.c\
-       printf_nbrtostr_bonus.c
+PRINTF_SRCS = ft_printf.c\
+       printf_utils.c\
+       printf_converts.c\
+       printf_nbrtostr.c
 SRCS_BONUS = ft_printf_bonus.c\
        printf_utils_bonus.c\
        printf_converts_bonus.c\
