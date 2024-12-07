@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_printf_bonus.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dderny <dderny@student.42lyon.fr>          +#+  +:+       +#+        */
+/*   By: dderny <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/28 14:16:10 by dderny            #+#    #+#             */
-/*   Updated: 2024/12/07 00:11:07 by dderny           ###   ########.fr       */
+/*   Updated: 2024/12/07 13:44:56 by dderny           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,11 +31,11 @@ static char	*convertany(va_list ap, t_pflag pt, int *len)
 	if (pt.flag == F_DECIMAL || pt.flag == F_INT || pt.flag == F_UNSIGNED)
 		tmp = convertnbr(ap, pt, len);
 	if (pt.flag == F_HEXAL)
-		tmp = converthexa((long long)va_arg(ap, __uint32_t), (t_nbrbase){BASE16L, 16}, pt, len);
+		tmp = converthexa((long long)va_arg(ap, __uint32_t),
+				(t_nbrbase){BASE16L, 16}, pt, len);
 	if (pt.flag == F_HEXAU)
-		tmp = converthexa((long long)va_arg(ap, __uint32_t), (t_nbrbase){BASE16U, 16}, pt, len);
-	if (pt.atributs[F_POINT] || pt.atributs[F_ZERO])
-		pt.min = 0;
+		tmp = converthexa((long long)va_arg(ap, __uint32_t),
+				(t_nbrbase){BASE16U, 16}, pt, len);
 	return (justifytxt(tmp, pt.atributs[F_MINUS], pt.min, len));
 }
 
@@ -51,17 +51,12 @@ static int	get_flag_type(char *flag, t_pflag *type)
 		type->atributs[tmp] = 1;
 		tmp = ft_strchrpos(ATRIBUTES, *flag);
 	}
-	type->min = m_atoi(flag);
-	while (ft_isdigit(*flag))
-		flag++;
+	type->min = m_atoi(&flag);
 	if (*flag == '.' && flag++)
 	{
-		type->atributs[F_POINT] = m_atoi(flag);
+		type->atributs[F_POINT] = m_atoi(&flag) + 1;
 	}
-	while (ft_isdigit(*flag))
-		flag++;
 	type->flag = F_NONE;
-	__builtin_printf("-%s, min %d, point %d-\n", flag, type->min, type->atributs[F_POINT]);
 	tmp = ft_strchrpos(FLAGS, *flag);
 	if (tmp >= 0 && flag++)
 	{
@@ -84,7 +79,7 @@ static int	processflag(va_list ap, char *format, t_pdata *data)
 		next = get_flag_type((char *)format + 1, &pt);
 		if (next > 0)
 		{
-			str = convertany(ap, pt, &data->strlen);			
+			str = convertany(ap, pt, &data->strlen);
 			data->str = str;
 			if (!str)
 				return (-1);
@@ -98,27 +93,23 @@ int	vft_printf(const char *format, va_list ap)
 	int		i;
 	t_pdata	data;
 
-	if (!format)
-		return (-1);
-	i = 0;
+	i = -1;
 	data.count = 0;
 	data.last = 0;
 	data.str = NULL;
-	while (format[i])
+	while (format[++i])
 	{
 		data.next = processflag(ap, (char *)format + i, &data);
 		if (data.next == -1)
 			return (-1);
-		else if (data.next)
-		{
-			write(STDOUT_FILENO, format + data.last, i - data.last);
-			data.count += i - data.last + data.strlen;
-			write(STDOUT_FILENO, data.str, data.strlen);
-			free(data.str);
-			i = i + data.next;
-			data.last = i + 1;
-		}
-		i++;
+		if (!data.next)
+			continue ;
+		write(STDOUT_FILENO, format + data.last, i - data.last);
+		data.count += i - data.last + data.strlen;
+		write(STDOUT_FILENO, data.str, data.strlen);
+		free(data.str);
+		i = i + data.next;
+		data.last = i + 1;
 	}
 	data.count += i - data.last;
 	write(STDOUT_FILENO, format + data.last, i - data.last);
@@ -130,18 +121,10 @@ int	ft_printf(const char *format, ...)
 	va_list	ap;
 	int		count;
 
+	if (!format)
+		return (-1);
 	va_start(ap, format);
 	count = vft_printf(format, ap);
 	va_end(ap);
 	return (count);
-}
-
-#include <limits.h>
-int main()
-{
-	int nb1 = __builtin_printf("%-7.3s;\n", "yolo");
-	int nb2 = ft_printf("%-7.3s;\n", "yolo");
-	ft_printf("%-7s;\n", "yolo");
-
-	__builtin_printf("-- %d; %d\n", nb1, nb2);
 }

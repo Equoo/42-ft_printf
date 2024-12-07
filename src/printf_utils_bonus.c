@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   printf_utils_bonus.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dderny <dderny@student.42lyon.fr>          +#+  +:+       +#+        */
+/*   By: dderny <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/28 14:45:48 by dderny            #+#    #+#             */
-/*   Updated: 2024/12/06 17:07:50 by dderny           ###   ########.fr       */
+/*   Updated: 2024/12/07 12:18:46 by dderny           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,7 @@ char	*justifytxt(char *str, int reverse, int len, int *strlen)
 char	*ft_strfreejoin(const char *s1, const char *s2, int free1, int free2)
 {
 	char	*str;
+
 	str = ft_strjoin(s1, s2);
 	if (free1)
 		free((void *)s1);
@@ -53,16 +54,17 @@ char	*ft_strfreejoin(const char *s1, const char *s2, int free1, int free2)
 	return (str);
 }
 
-int	m_atoi(const char *str)
+int	m_atoi(char **str)
 {
-	int					i;
 	int					digits;
 	unsigned long long	res;
 
-	i = 0;
 	res = 0;
 	digits = 0;
-	while (str[i] && ft_isdigit(str[i]) && ++digits)
-		res = res * 10 + (int)(str[i++] - '0');
+	while (**str && ft_isdigit(**str) && ++digits)
+	{
+		res = res * 10 + (int)(**str - '0');
+		*str = *str + 1;
+	}
 	return ((int)res);
 }

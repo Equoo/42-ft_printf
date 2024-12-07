@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   printf_nbrtostr_bonus.c                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dderny <dderny@student.42lyon.fr>          +#+  +:+       +#+        */
+/*   By: dderny <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/05 13:58:21 by dderny            #+#    #+#             */
-/*   Updated: 2024/12/06 14:45:07 by dderny           ###   ########.fr       */
+/*   Updated: 2024/12/07 12:18:33 by dderny           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,8 +107,8 @@ static int	unumberlen(unsigned long n, t_ltoainfo info)
 
 char	*ft_ultoa_base(unsigned long n, t_ltoainfo info, int *strlen)
 {
-	int len;
-	char *str;
+	int		len;
+	char	*str;
 
 	len = unumberlen(n, info);
 	*strlen = len;

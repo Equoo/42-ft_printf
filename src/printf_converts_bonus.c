@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   printf_converts_bonus.c                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dderny <dderny@student.42lyon.fr>          +#+  +:+       +#+        */
+/*   By: dderny <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/02 14:41:34 by dderny            #+#    #+#             */
-/*   Updated: 2024/12/06 15:07:38 by dderny           ###   ########.fr       */
+/*   Updated: 2024/12/07 12:18:08 by dderny           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,8 +31,10 @@ char	*convertnbr(va_list ap, t_pflag ptype, int *len)
 		info.sign = ' ';
 	if (ptype.atributs[F_POINT])
 		info.zeronbr = 1;
-	if (ptype.atributs[F_ZERO] || ptype.atributs[F_POINT])
+	if (ptype.atributs[F_ZERO])
 		info.zeros = ptype.min;
+	if (ptype.atributs[F_POINT])
+		info.zeros = ptype.atributs[F_POINT] - 1;
 	str = ft_lltoa_base(nbr, info, len);
 	return (str);
 }
@@ -47,8 +49,10 @@ char	*converthexa(long long nbr, t_nbrbase base, t_pflag ptype, int *len)
 		info.prefix = base.str + base.len;
 	if (ptype.atributs[F_POINT])
 		info.zeronbr = 1;
-	if (ptype.atributs[F_ZERO] || ptype.atributs[F_POINT])
+	if (ptype.atributs[F_ZERO])
 		info.zeros = ptype.min;
+	if (ptype.atributs[F_POINT])
+		info.zeros = ptype.atributs[F_POINT] - 1;
 	if (ptype.flag != F_HEXAL && ptype.flag != F_HEXAU)
 	{
 		if (ptype.atributs[F_SPACE])
@@ -65,7 +69,7 @@ char	*converthexa(long long nbr, t_nbrbase base, t_pflag ptype, int *len)
 
 char	*convertpointer(va_list ap, t_pflag ptype, int *len)
 {
-	__uint64_t pt;
+	__uint64_t	pt;
 
 	pt = (__uint64_t)va_arg(ap, void *);
 	if (!pt)
@@ -89,7 +93,7 @@ char	*convertchar(char c, int *len)
 	return (res);
 }
 
-char	*convertstr(va_list ap, t_pflag ptype, int *len)
+char	*convertstr(va_list ap, t_pflag p, int *len)
 {
 	char	*cpystr;
 	char	*res;
@@ -99,7 +103,7 @@ char	*convertstr(va_list ap, t_pflag ptype, int *len)
 	cpystr = (char *)va_arg(ap, char *);
 	if (!cpystr)
 	{
-		if (ptype.atributs[F_POINT])
+		if (p.atributs[F_POINT] && p.atributs[F_POINT] - 1 < 6)
 		{
 			*len = 0;
 			return (ft_strdup(""));
@@ -108,12 +112,12 @@ char	*convertstr(va_list ap, t_pflag ptype, int *len)
 		return (ft_strdup("(null)"));
 	}
 	strlen = ft_strlen(cpystr);
-	if (ptype.atributs[F_POINT] && ptype.flag != F_CHAR && strlen > ptype.min)
-		strlen = ptype.min;
+	if (p.atributs[F_POINT] && p.flag != F_CHAR
+		&& strlen > p.atributs[F_POINT] - 1)
+		strlen = p.atributs[F_POINT] - 1;
 	res = ft_calloc(strlen + 1, sizeof(char));
-	if (!res)
-		return (NULL);
-	ft_strlcpy(res, cpystr, strlen + 1);
+	if (res)
+		ft_strlcpy(res, cpystr, strlen + 1);
 	*len = strlen;
 	return (res);
 }

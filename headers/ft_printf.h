@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_printf.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dderny <dderny@student.42lyon.fr>          +#+  +:+       +#+        */
+/*   By: dderny <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/28 14:16:10 by dderny            #+#    #+#             */
-/*   Updated: 2024/12/06 17:17:31 by dderny           ###   ########.fr       */
+/*   Updated: 2024/12/07 12:19:51 by dderny           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@
 # define ATRIBUTES "# 0+-"
 # define ATRIBUTESLEN 6
 # define FLAGS "cspdiuxX%"
+
 typedef enum e_prnt_flag
 {
 	F_TAG,
@@ -78,7 +79,7 @@ char			*ft_ultoa_base(unsigned long n, t_ltoainfo info, int *strlen);
 char			*ft_strfreejoin(const char *s1, const char *s2, int free1,
 					int free2);
 char			*justifytxt(char *str, int reverse, int len, int *strlen);
-int				m_atoi(const char *str);
+int				m_atoi(char **str);
 
 char			*convertnbr(va_list ap, t_pflag ptype, int *len);
 char			*convertpointer(va_list ap, t_pflag ptype, int *len);
@@ -88,6 +89,6 @@ char			*convertchar(char c, int *len);
 char			*convertstr(va_list ap, t_pflag ptype, int *len);
 
 int				vft_printf(const char *format, va_list ap);
-int				ft_printf(const char *, ...);
+int				ft_printf(const char *format, ...);
 
 #endif
