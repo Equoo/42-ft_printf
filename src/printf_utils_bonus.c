@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   printf_utils_bonus.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dderny <marvin@42.fr>                      +#+  +:+       +#+        */
+/*   By: dderny <dderny@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/28 14:45:48 by dderny            #+#    #+#             */
-/*   Updated: 2024/12/05 18:22:56 by dderny           ###   ########.fr       */
+/*   Updated: 2024/12/06 17:07:50 by dderny           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,4 +51,18 @@ char	*ft_strfreejoin(const char *s1, const char *s2, int free1, int free2)
 	if (!str)
 		return (NULL);
 	return (str);
+}
+
+int	m_atoi(const char *str)
+{
+	int					i;
+	int					digits;
+	unsigned long long	res;
+
+	i = 0;
+	res = 0;
+	digits = 0;
+	while (str[i] && ft_isdigit(str[i]) && ++digits)
+		res = res * 10 + (int)(str[i++] - '0');
+	return ((int)res);
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_printf_bonus.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dderny <marvin@42.fr>                      +#+  +:+       +#+        */
+/*   By: dderny <dderny@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/28 14:16:10 by dderny            #+#    #+#             */
-/*   Updated: 2024/12/05 18:38:45 by dderny           ###   ########.fr       */
+/*   Updated: 2024/12/07 00:11:07 by dderny           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@ static char	*convertany(va_list ap, t_pflag pt, int *len)
 {
 	char	*tmp;
 
+	tmp = NULL;
 	if (pt.flag == F_PERCENT)
 		return (convertchar('%', len));
 	if (pt.flag == F_CHAR)
@@ -26,21 +27,13 @@ static char	*convertany(va_list ap, t_pflag pt, int *len)
 	if (pt.flag == F_STRING)
 		tmp = convertstr(ap, pt, len);
 	if (pt.flag == F_POINTER)
-	{ // FQIRE DQNAS UNE FUNC
-		// if (!cpystr)
-		// {
-		// 	*len = 6;
-		// 	return (ft_strdup("(null)"));
-		// }
-		// pt.atributs[F_TAG] = 1;
-		// tmp = converthexa((__uint64_t)va_arg(ap, void *), (t_nbrbase){BASE16l, 16}, pt, len);
-	}
+		tmp = convertpointer(ap, pt, len);
 	if (pt.flag == F_DECIMAL || pt.flag == F_INT || pt.flag == F_UNSIGNED)
 		tmp = convertnbr(ap, pt, len);
 	if (pt.flag == F_HEXAL)
-		tmp = converthexa((long long)va_arg(ap, __uint32_t), (t_nbrbase){BASE16l, 16}, pt, len);
+		tmp = converthexa((long long)va_arg(ap, __uint32_t), (t_nbrbase){BASE16L, 16}, pt, len);
 	if (pt.flag == F_HEXAU)
-		tmp = converthexa((long long)va_arg(ap, __uint32_t), (t_nbrbase){BASE16u, 16}, pt, len);
+		tmp = converthexa((long long)va_arg(ap, __uint32_t), (t_nbrbase){BASE16U, 16}, pt, len);
 	if (pt.atributs[F_POINT] || pt.atributs[F_ZERO])
 		pt.min = 0;
 	return (justifytxt(tmp, pt.atributs[F_MINUS], pt.min, len));
@@ -58,10 +51,17 @@ static int	get_flag_type(char *flag, t_pflag *type)
 		type->atributs[tmp] = 1;
 		tmp = ft_strchrpos(ATRIBUTES, *flag);
 	}
-	type->min = ft_atoi(flag);
+	type->min = m_atoi(flag);
+	while (ft_isdigit(*flag))
+		flag++;
+	if (*flag == '.' && flag++)
+	{
+		type->atributs[F_POINT] = m_atoi(flag);
+	}
 	while (ft_isdigit(*flag))
 		flag++;
 	type->flag = F_NONE;
+	__builtin_printf("-%s, min %d, point %d-\n", flag, type->min, type->atributs[F_POINT]);
 	tmp = ft_strchrpos(FLAGS, *flag);
 	if (tmp >= 0 && flag++)
 	{
@@ -134,4 +134,14 @@ int	ft_printf(const char *format, ...)
 	count = vft_printf(format, ap);
 	va_end(ap);
 	return (count);
+}
+
+#include <limits.h>
+int main()
+{
+	int nb1 = __builtin_printf("%-7.3s;\n", "yolo");
+	int nb2 = ft_printf("%-7.3s;\n", "yolo");
+	ft_printf("%-7s;\n", "yolo");
+
+	__builtin_printf("-- %d; %d\n", nb1, nb2);
 }

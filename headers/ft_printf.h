@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_printf.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dderny <marvin@42.fr>                      +#+  +:+       +#+        */
+/*   By: dderny <dderny@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/28 14:16:10 by dderny            #+#    #+#             */
-/*   Updated: 2024/12/05 18:24:41 by dderny           ###   ########.fr       */
+/*   Updated: 2024/12/06 17:17:31 by dderny           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,10 +15,10 @@
 # include <stdarg.h>
 
 # define BASE10 "0123456789"
-# define BASE16l "0123456789abcdef0x"
-# define BASE16u "0123456789ABCDEF0X"
+# define BASE16L "0123456789abcdef0x"
+# define BASE16U "0123456789ABCDEF0X"
 
-# define ATRIBUTES "# 0+-."
+# define ATRIBUTES "# 0+-"
 # define ATRIBUTESLEN 6
 # define FLAGS "cspdiuxX%"
 typedef enum e_prnt_flag
@@ -78,8 +78,10 @@ char			*ft_ultoa_base(unsigned long n, t_ltoainfo info, int *strlen);
 char			*ft_strfreejoin(const char *s1, const char *s2, int free1,
 					int free2);
 char			*justifytxt(char *str, int reverse, int len, int *strlen);
+int				m_atoi(const char *str);
 
 char			*convertnbr(va_list ap, t_pflag ptype, int *len);
+char			*convertpointer(va_list ap, t_pflag ptype, int *len);
 char			*converthexa(long long nbr, t_nbrbase base,
 					t_pflag ptype, int *len);
 char			*convertchar(char c, int *len);

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   printf_nbrtostr_bonus.c                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dderny <marvin@42.fr>                      +#+  +:+       +#+        */
+/*   By: dderny <dderny@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/05 13:58:21 by dderny            #+#    #+#             */
-/*   Updated: 2024/12/05 18:25:36 by dderny           ###   ########.fr       */
+/*   Updated: 2024/12/06 14:45:07 by dderny           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,9 @@ static int	numberlen(long long n, t_ltoainfo info)
 		nb /= info.base.len;
 	if (info.zeronbr && info.zeros > len)
 		len = info.zeros;
-	if (info.sign || n < 0 || !n)
+	if (!info.zeronbr && !n)
+		len++;
+	if (info.sign || n < 0)
 		len++;
 	if (info.prefix && n)
 		len += ft_strlen(info.prefix);
@@ -71,7 +73,7 @@ char	*ft_lltoa_base(long long n, t_ltoainfo info, int *strlen)
 		nb *= -1;
 	else if (info.sign)
 		str[0] = info.sign;
-	while ((n && nb && len--) || (!n && len--))
+	while (n && nb && len--)
 	{
 		str[len] = info.base.str[nb % info.base.len];
 		nb /= info.base.len;
@@ -92,7 +94,9 @@ static int	unumberlen(unsigned long n, t_ltoainfo info)
 		nb /= info.base.len;
 	if (info.zeronbr && info.zeros > len)
 		len = info.zeros;
-	if (info.sign || !n)
+	if (!info.zeronbr && !n)
+		len++;
+	if (info.sign)
 		len++;
 	if (info.prefix && n)
 		len += ft_strlen(info.prefix);
