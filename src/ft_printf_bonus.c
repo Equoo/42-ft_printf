@@ -6,7 +6,7 @@
 /*   By: dderny <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/28 14:16:10 by dderny            #+#    #+#             */
-/*   Updated: 2024/12/07 13:44:56 by dderny           ###   ########.fr       */
+/*   Updated: 2024/12/10 16:43:38 by dderny           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,13 +57,15 @@ static int	get_flag_type(char *flag, t_pflag *type)
 		type->atributs[F_POINT] = m_atoi(&flag) + 1;
 	}
 	type->flag = F_NONE;
+	if (tmp < 0)
+		return (0);
 	tmp = ft_strchrpos(FLAGS, *flag);
 	if (tmp >= 0 && flag++)
 	{
 		type->flag = (t_prnt_flag)(ATRIBUTESLEN + tmp);
 		return (flag - sflag);
 	}
-	return (0);
+	return (sflag - flag);
 }
 
 static int	processflag(va_list ap, char *format, t_pdata *data)
@@ -83,6 +85,11 @@ static int	processflag(va_list ap, char *format, t_pdata *data)
 			data->str = str;
 			if (!str)
 				return (-1);
+		}
+		else
+		{
+			
+			next = next * -1;
 		}
 	}
 	return (next);
@@ -105,6 +112,8 @@ int	vft_printf(const char *format, va_list ap)
 		if (!data.next)
 			continue ;
 		write(STDOUT_FILENO, format + data.last, i - data.last);
+		if (data.count == -1)
+			return (-1);
 		data.count += i - data.last + data.strlen;
 		write(STDOUT_FILENO, data.str, data.strlen);
 		free(data.str);
