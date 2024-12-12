@@ -6,7 +6,7 @@
 /*   By: dderny <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/28 14:16:10 by dderny            #+#    #+#             */
-/*   Updated: 2024/12/12 15:35:55 by dderny           ###   ########.fr       */
+/*   Updated: 2024/12/12 17:06:15 by dderny           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@
 
 # define ATRIBUTES "# 0+-"
 # define ATRIBUTESLEN 6
-# define FLAGS "cspdiuxX%"
+# define FLAGS "cspdiuxX%q"
 
 typedef enum e_prnt_flag
 {

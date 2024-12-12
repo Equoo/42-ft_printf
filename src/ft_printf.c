@@ -6,7 +6,7 @@
 /*   By: dderny <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/28 14:16:10 by dderny            #+#    #+#             */
-/*   Updated: 2024/12/12 16:38:19 by dderny           ###   ########.fr       */
+/*   Updated: 2024/12/12 17:03:48 by dderny           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,29 +71,30 @@ static int	get_flag_type(char *flag, t_pflag *type)
 static int	processflag(va_list ap, char *format, t_pdata *data)
 {
 	t_pflag	pt;
-	int		next;
 
-	next = -2;
+	data->next = -2;
 	if ((unsigned char)*format == '%')
 	{
 		pt = (t_pflag){};
-		next = get_flag_type((char *)format + 1, &pt);
-		if (!next)
-			next = -1;
-		else if (next > 0)
+		data->next = get_flag_type((char *)format + 1, &pt);
+		if (!data->next)
+			data->next = -1;
+		else if (data->next > 0)
 			data->str = convertany(ap, pt, &data->strlen);
 		else
 		{
 			data->strlen = 1;
 			data->str = ft_strdup("%");
-			next = next * -1 - 1;
+			data->next = data->next * -1 - 1;
+			if (data->next > 0)
+				data->next -= 1;
 		}
 		if (!data->str)
-			next = -1;
+			data->next = -1;
 	}
-	if (next == -1)
+	if (data->next == -1)
 		data->count = -1;
-	return (next);
+	return (data->next);
 }
 
 int	vft_printf(const char *format, va_list ap)
