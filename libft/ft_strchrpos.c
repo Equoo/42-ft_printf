@@ -6,7 +6,7 @@
 /*   By: dderny <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/28 15:25:09 by dderny            #+#    #+#             */
-/*   Updated: 2024/12/02 15:32:25 by dderny           ###   ########.fr       */
+/*   Updated: 2024/12/12 16:32:20 by dderny           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ int	ft_strchrpos(const char *s, int c)
 	i = 0;
 	while (s[i] && (unsigned char)s[i] != (unsigned char)c)
 		i++;
-	if (!s[i] && (unsigned char)c != '\0')
+	if (!s[i])
 		return (-1);
 	return (i);
 }

@@ -6,7 +6,7 @@
 /*   By: dderny <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/28 14:16:10 by dderny            #+#    #+#             */
-/*   Updated: 2024/12/10 16:43:38 by dderny           ###   ########.fr       */
+/*   Updated: 2024/12/12 16:38:19 by dderny           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ static int	get_flag_type(char *flag, t_pflag *type)
 		type->atributs[F_POINT] = m_atoi(&flag) + 1;
 	}
 	type->flag = F_NONE;
-	if (tmp < 0)
+	if (!*flag)
 		return (0);
 	tmp = ft_strchrpos(FLAGS, *flag);
 	if (tmp >= 0 && flag++)
@@ -65,33 +65,34 @@ static int	get_flag_type(char *flag, t_pflag *type)
 		type->flag = (t_prnt_flag)(ATRIBUTESLEN + tmp);
 		return (flag - sflag);
 	}
-	return (sflag - flag);
+	return (sflag - flag - 1);
 }
 
 static int	processflag(va_list ap, char *format, t_pdata *data)
 {
 	t_pflag	pt;
 	int		next;
-	char	*str;
 
-	next = 0;
+	next = -2;
 	if ((unsigned char)*format == '%')
 	{
 		pt = (t_pflag){};
 		next = get_flag_type((char *)format + 1, &pt);
-		if (next > 0)
-		{
-			str = convertany(ap, pt, &data->strlen);
-			data->str = str;
-			if (!str)
-				return (-1);
-		}
+		if (!next)
+			next = -1;
+		else if (next > 0)
+			data->str = convertany(ap, pt, &data->strlen);
 		else
 		{
-			
-			next = next * -1;
+			data->strlen = 1;
+			data->str = ft_strdup("%");
+			next = next * -1 - 1;
 		}
+		if (!data->str)
+			next = -1;
 	}
+	if (next == -1)
+		data->count = -1;
 	return (next);
 }
 
@@ -108,19 +109,18 @@ int	vft_printf(const char *format, va_list ap)
 	{
 		data.next = processflag(ap, (char *)format + i, &data);
 		if (data.next == -1)
-			return (-1);
-		if (!data.next)
+			break ;
+		if (data.next == -2)
 			continue ;
 		write(STDOUT_FILENO, format + data.last, i - data.last);
-		if (data.count == -1)
-			return (-1);
 		data.count += i - data.last + data.strlen;
 		write(STDOUT_FILENO, data.str, data.strlen);
 		free(data.str);
 		i = i + data.next;
 		data.last = i + 1;
 	}
-	data.count += i - data.last;
+	if (data.count != -1)
+		data.count += i - data.last;
 	write(STDOUT_FILENO, format + data.last, i - data.last);
 	return (data.count);
 }
